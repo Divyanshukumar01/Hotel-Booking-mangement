@@ -1,0 +1,8 @@
+const express = require('express');
+const { getHotels, getHotelById } = require('../Controllers/hotelController');
+const router = express.Router();
+
+router.get('/', getHotels);
+router.get('/:id', getHotelById);
+
+module.exports = router;

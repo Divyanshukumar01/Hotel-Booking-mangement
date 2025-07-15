@@ -1,0 +1,22 @@
+.home-container {
+  padding: 20px;
+}
+.hotel-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+.hotel-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* adds space between the cards */
+  justify-content: center;
+}
+
+.hotel-card {
+  width: 250px;
+  padding: 16px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
