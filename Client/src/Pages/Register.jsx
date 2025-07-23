@@ -1,27 +1,3 @@
-// import React, { useState } from 'react';
-// import api from '../Services/Api';
-// import '../Styles/Auth.css';
-// const Register = () => {
-//   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
-
-//   const handleChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
-//   const handleSubmit = async e => {
-//     e.preventDefault();
-//     await api.post('/auth/register', formData);
-//     alert('Registration successful');
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
-//       <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
-//       <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Password" />
-//       <button type="submit">Register</button>
-//     </form>
-//   );
-// };
-
-// export default Register;
 
 import React, { useState } from 'react';
 import api from '../Services/Api';

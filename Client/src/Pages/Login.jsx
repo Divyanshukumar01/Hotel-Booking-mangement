@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../Services/Api';
 import '../Styles/Auth.css';
 
@@ -7,7 +7,6 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,9 +21,9 @@ const Login = () => {
       
       // Redirect based on user role
       if (res.data.user.role === 'admin') {
-        navigate('/admin');
+        <Link to={'/admin'} />;
       } else {
-        navigate('/home');
+        <Link to={'/home'} />;
       }
       
       // Force page reload to update header
@@ -51,9 +50,9 @@ const Login = () => {
       alert(`${userType === 'admin' ? 'Admin' : 'User'} login successful`);
       
       if (res.data.user.role === 'admin') {
-        navigate('/admin');
+        <Link to={'/admin'} />;
       } else {
-        navigate('/home');
+        <Link to={'/home'} />;
       }
       
       // Force page reload to update header
