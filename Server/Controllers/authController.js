@@ -7,11 +7,23 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (user && user.password === req.body.password) {
-    const token = jwt.sign({ id: user._id }, 'secret');
-    res.json({ token });
-  } else {
-    res.status(401).json({ message: 'Invalid credentials' });
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user && user.password === req.body.password) {
+      const token = jwt.sign({ id: user._id, role: user.role }, 'secret');
+      res.json({ 
+        token, 
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }
+      });
+    } else {
+      res.status(401).json({ message: 'Invalid credentials' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };

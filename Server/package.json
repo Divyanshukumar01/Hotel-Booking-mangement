@@ -1,9 +1,12 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "nodemon server.js",
   "scripts": {
-    "Start": "nodemon server.js",
+    "start": "nodemon server.js",
+    "seed": "node seedData.js",
+    "add-data": "node seedData.js",
+    "clear-and-seed": "node clearAndSeed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,3 +22,5 @@
     "nodemon": "^3.1.10"
   }
 }
+
+

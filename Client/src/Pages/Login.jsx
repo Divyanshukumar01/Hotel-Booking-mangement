@@ -1,22 +1,53 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ✅ import hook
+import { useNavigate } from 'react-router-dom';
 import api from '../Services/Api';
 import '../Styles/Auth.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // ✅ initialize here
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/login', { email, password });
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      
       alert('Login successful');
-      navigate('/home'); // ✅ redirect to home
+      
+      // Redirect based on user role
+      if (res.data.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/home');
+      }
     } catch (err) {
       alert('Invalid credentials');
+      console.error(err);
+    }
+  };
+
+  const handleDemoLogin = async (userType) => {
+    const credentials = userType === 'admin' 
+      ? { email: 'admin@roomvista.com', password: 'admin123' }
+      : { email: 'john@example.com', password: 'password123' };
+    
+    try {
+      const res = await api.post('/auth/login', credentials);
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      
+      alert(`${userType === 'admin' ? 'Admin' : 'User'} login successful`);
+      
+      if (res.data.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/home');
+      }
+    } catch (err) {
+      alert('Demo login failed');
       console.error(err);
     }
   };
@@ -24,6 +55,13 @@ const Login = () => {
   return (
     <form onSubmit={handleSubmit} className="auth-form">
       <h2>Login</h2>
+      
+      <div className="demo-credentials">
+        <h4>Demo Credentials:</h4>
+        <p><strong>Admin:</strong> admin@roomvista.com / admin123</p>
+        <p><strong>User:</strong> john@example.com / password123</p>
+      </div>
+      
       <input 
         value={email} 
         onChange={e => setEmail(e.target.value)} 
@@ -38,6 +76,23 @@ const Login = () => {
         required 
       />
       <button type="submit">Login</button>
+      
+      <div className="demo-buttons">
+        <button 
+          type="button" 
+          onClick={() => handleDemoLogin('admin')}
+          className="demo-btn admin-btn"
+        >
+          Demo Admin Login
+        </button>
+        <button 
+          type="button" 
+          onClick={() => handleDemoLogin('user')}
+          className="demo-btn user-btn"
+        >
+          Demo User Login
+        </button>
+      </div>
     </form>
   );
 };
