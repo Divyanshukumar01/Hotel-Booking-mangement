@@ -71,12 +71,6 @@ const Login = () => {
       <form onSubmit={handleSubmit} className="auth-form">
         <h2>Login to RoomVista</h2>
         
-        <div className="demo-credentials">
-          <h4>Demo Credentials:</h4>
-          <p><strong>Admin:</strong> admin@roomvista.com / admin123</p>
-          <p><strong>User:</strong> john@example.com / password123</p>
-        </div>
-        
         <input 
           value={email} 
           onChange={e => setEmail(e.target.value)} 
@@ -115,10 +109,6 @@ const Login = () => {
             Demo User Login
           </button>
         </div>
-        
-        <p className="auth-switch">
-          Don't have an account? <a href="/register">Register here</a>
-        </p>
       </form>
     </div>
   );
