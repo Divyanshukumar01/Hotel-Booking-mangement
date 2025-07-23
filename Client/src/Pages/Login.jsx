@@ -7,6 +7,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,15 +20,14 @@ const Login = () => {
       
       alert('Login successful');
       
-      // Redirect based on user role
-      if (res.data.user.role === 'admin') {
-        <Link to={'/admin'} />;
-      } else {
-        <Link to={'/home'} />;
-      }
-      
-      // Force page reload to update header
-      window.location.reload();
+      // Small delay to ensure localStorage is set
+      setTimeout(() => {
+        if (res.data.user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/home');
+        }
+      }, 100);
     } catch (err) {
       alert('Invalid credentials');
       console.error(err);
@@ -49,14 +49,14 @@ const Login = () => {
       
       alert(`${userType === 'admin' ? 'Admin' : 'User'} login successful`);
       
-      if (res.data.user.role === 'admin') {
-        <Link to={'/admin'} />;
-      } else {
-        <Link to={'/home'} />;
-      }
-      
-      // Force page reload to update header
-      window.location.reload();
+      // Small delay to ensure localStorage is set
+      setTimeout(() => {
+        if (res.data.user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/home');
+        }
+      }, 100);
     } catch (err) {
       alert('Demo login failed');
       console.error(err);
