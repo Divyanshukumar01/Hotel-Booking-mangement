@@ -89,25 +89,6 @@ const Login = () => {
         <button type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
-        
-        <div className="demo-buttons">
-          <button 
-            type="button" 
-            onClick={() => handleDemoLogin('admin')}
-            className="demo-btn admin-btn"
-            disabled={loading}
-          >
-            Demo Admin Login
-          </button>
-          <button 
-            type="button" 
-            onClick={() => handleDemoLogin('user')}
-            className="demo-btn user-btn"
-            disabled={loading}
-          >
-            Demo User Login
-          </button>
-        </div>
       </form>
     </div>
   );
