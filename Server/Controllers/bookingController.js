@@ -1,13 +1,9 @@
 const Booking = require('../models/Booking');
 const Hotel = require('../models/Hotel');
-const jwt = require('jsonwebtoken');
 
 exports.createBooking = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ message: 'Unauthorized' });
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Creating booking with user:', req.user);
     
     // Check hotel availability
     const hotel = await Hotel.findById(req.body.hotelId);
@@ -22,7 +18,7 @@ exports.createBooking = async (req, res) => {
     // Create booking
     const booking = await Booking.create({ 
       ...req.body, 
-      userId: decoded.id 
+      userId: req.user._id 
     });
     
     // Decrease available rooms
@@ -33,24 +29,31 @@ exports.createBooking = async (req, res) => {
     
     res.json(booking);
   } catch (error) {
+    console.error('Booking error:', error);
     res.status(500).json({ message: 'Booking failed', error: error.message });
   }
 };
 
 exports.getAllBookings = async (req, res) => {
   try {
+    console.log('Fetching all bookings for admin:', req.user);
+    
     const bookings = await Booking.find()
       .populate('hotelId', 'name location price')
-      .populate('userId', 'email')
+      .populate('userId', 'name email')
       .sort({ bookingDate: -1 });
+    
     res.json(bookings);
   } catch (error) {
+    console.error('Get bookings error:', error);
     res.status(500).json({ message: 'Failed to fetch bookings', error: error.message });
   }
 };
 
 exports.cancelBooking = async (req, res) => {
   try {
+    console.log('Cancelling booking:', req.params.id, 'by admin:', req.user);
+    
     const booking = await Booking.findById(req.params.id);
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
@@ -68,6 +71,7 @@ exports.cancelBooking = async (req, res) => {
     
     res.json({ message: 'Booking cancelled successfully' });
   } catch (error) {
+    console.error('Cancel booking error:', error);
     res.status(500).json({ message: 'Failed to cancel booking', error: error.message });
   }
 };

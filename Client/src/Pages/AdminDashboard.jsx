@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../Services/Api';
+import HotelManagement from '../components/HotelManagement';
 import '../Styles/AdminDashboard.css';
 
 const AdminDashboard = () => {
+  const [activeTab, setActiveTab] = useState('overview');
   const [bookings, setBookings] = useState([]);
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,81 +53,106 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <h1>Admin Dashboard</h1>
       
-      {/* Hotel Availability Section */}
-      <div className="dashboard-section">
-        <h2>Hotel Availability</h2>
-        <div className="hotels-grid">
-          {hotels.map(hotel => (
-            <div key={hotel._id} className="hotel-availability-card">
-              <h3>{hotel.name}</h3>
-              <p className="location">{hotel.location}</p>
-              <div className="availability-info">
-                <span className="total-rooms">Total Rooms: {hotel.totalRooms}</span>
-                <span className={`available-rooms ${hotel.availableRooms === 0 ? 'no-rooms' : ''}`}>
-                  Available: {hotel.availableRooms}
-                </span>
-                <span className="booked-rooms">
-                  Booked: {hotel.totalRooms - hotel.availableRooms}
-                </span>
-              </div>
-              <div className="occupancy-bar">
-                <div 
-                  className="occupancy-fill"
-                  style={{ 
-                    width: `${((hotel.totalRooms - hotel.availableRooms) / hotel.totalRooms) * 100}%` 
-                  }}
-                ></div>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="dashboard-tabs">
+        <button 
+          className={activeTab === 'overview' ? 'active' : ''}
+          onClick={() => setActiveTab('overview')}
+        >
+          Overview
+        </button>
+        <button 
+          className={activeTab === 'hotels' ? 'active' : ''}
+          onClick={() => setActiveTab('hotels')}
+        >
+          Manage Hotels
+        </button>
+        <button 
+          className={activeTab === 'bookings' ? 'active' : ''}
+          onClick={() => setActiveTab('bookings')}
+        >
+          Bookings
+        </button>
       </div>
 
-      {/* Bookings Section */}
-      <div className="dashboard-section">
-        <h2>Recent Bookings</h2>
-        <div className="bookings-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Guest Name</th>
-                <th>Hotel</th>
-                <th>Check-in</th>
-                <th>Check-out</th>
-                <th>Status</th>
-                <th>Booking Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map(booking => (
-                <tr key={booking._id}>
-                  <td>{booking.fullName}</td>
-                  <td>{booking.hotelId?.name}</td>
-                  <td>{booking.checkIn}</td>
-                  <td>{booking.checkOut}</td>
-                  <td>
-                    <span className={`status ${booking.status}`}>
-                      {booking.status}
-                    </span>
-                  </td>
-                  <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
-                  <td>
-                    {booking.status === 'confirmed' && (
-                      <button 
-                        onClick={() => cancelBooking(booking._id)}
-                        className="cancel-btn"
-                      >
-                        Cancel
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {activeTab === 'overview' && (
+        <div className="dashboard-section">
+          <h2>Hotel Availability</h2>
+          <div className="hotels-grid">
+            {hotels.map(hotel => (
+              <div key={hotel._id} className="hotel-availability-card">
+                <h3>{hotel.name}</h3>
+                <p className="location">{hotel.location}</p>
+                <div className="availability-info">
+                  <span className="total-rooms">Total Rooms: {hotel.totalRooms}</span>
+                  <span className={`available-rooms ${hotel.availableRooms === 0 ? 'no-rooms' : ''}`}>
+                    Available: {hotel.availableRooms}
+                  </span>
+                  <span className="booked-rooms">
+                    Booked: {hotel.totalRooms - hotel.availableRooms}
+                  </span>
+                </div>
+                <div className="occupancy-bar">
+                  <div 
+                    className="occupancy-fill"
+                    style={{ 
+                      width: `${((hotel.totalRooms - hotel.availableRooms) / hotel.totalRooms) * 100}%` 
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {activeTab === 'hotels' && <HotelManagement />}
+
+      {activeTab === 'bookings' && (
+        <div className="dashboard-section">
+          <h2>Recent Bookings</h2>
+          <div className="bookings-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Guest Name</th>
+                  <th>Hotel</th>
+                  <th>Check-in</th>
+                  <th>Check-out</th>
+                  <th>Status</th>
+                  <th>Booking Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map(booking => (
+                  <tr key={booking._id}>
+                    <td>{booking.fullName}</td>
+                    <td>{booking.hotelId?.name}</td>
+                    <td>{booking.checkIn}</td>
+                    <td>{booking.checkOut}</td>
+                    <td>
+                      <span className={`status ${booking.status}`}>
+                        {booking.status}
+                      </span>
+                    </td>
+                    <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
+                    <td>
+                      {booking.status === 'confirmed' && (
+                        <button 
+                          onClick={() => cancelBooking(booking._id)}
+                          className="cancel-btn"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
