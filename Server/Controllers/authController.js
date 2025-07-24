@@ -7,13 +7,11 @@ exports.registerUser = async (req, res) => {
     
     const { name, email, password } = req.body;
     
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
     
-    // Create new user
     const user = await User.create({ name, email, password });
     console.log('User created:', user);
     
@@ -73,6 +71,29 @@ exports.loginUser = async (req, res) => {
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Login failed', error: error.message });
+  }
+};
+
+exports.auth = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+    const user = await User.findById(decoded.id);
+    
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Auth error:', error);
+    res.status(401).json({ message: 'Invalid token' });
   }
 };
 

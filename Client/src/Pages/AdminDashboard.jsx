@@ -16,7 +16,11 @@ const AdminDashboard = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await api.get('/bookings/admin');
+      const token = localStorage.getItem('token');
+      const response = await api.get('/bookings/admin', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log('Bookings response:', response.data);
       setBookings(response.data);
     } catch (error) {
       console.error('Failed to fetch bookings:', error);
@@ -37,12 +41,16 @@ const AdminDashboard = () => {
   const cancelBooking = async (bookingId) => {
     if (window.confirm('Are you sure you want to cancel this booking?')) {
       try {
-        await api.put(`/bookings/cancel/${bookingId}`);
+        const token = localStorage.getItem('token');
+        await api.put(`/bookings/cancel/${bookingId}`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         alert('Booking cancelled successfully');
         fetchBookings();
         fetchHotels();
       } catch (error) {
-        alert('Failed to cancel booking');
+        console.error('Cancel booking error:', error);
+        alert(`Failed to cancel booking: ${error.response?.data?.message || error.message}`);
       }
     }
   };
@@ -126,16 +134,16 @@ const AdminDashboard = () => {
               <tbody>
                 {bookings.map(booking => (
                   <tr key={booking._id}>
-                    <td>{booking.fullName}</td>
-                    <td>{booking.hotelId?.name}</td>
-                    <td>{booking.checkIn}</td>
-                    <td>{booking.checkOut}</td>
+                    <td>{booking.fullName || 'N/A'}</td>
+                    <td>{booking.hotelId?.name || 'Hotel not found'}</td>
+                    <td>{booking.checkIn || 'N/A'}</td>
+                    <td>{booking.checkOut || 'N/A'}</td>
                     <td>
                       <span className={`status ${booking.status}`}>
                         {booking.status}
                       </span>
                     </td>
-                    <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
+                    <td>{booking.bookingDate ? new Date(booking.bookingDate).toLocaleDateString() : 'N/A'}</td>
                     <td>
                       {booking.status === 'confirmed' && (
                         <button 
@@ -158,3 +166,6 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+
+

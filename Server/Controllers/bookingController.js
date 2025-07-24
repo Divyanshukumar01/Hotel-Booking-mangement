@@ -5,7 +5,6 @@ exports.createBooking = async (req, res) => {
   try {
     console.log('Creating booking with user:', req.user);
     
-    // Check hotel availability
     const hotel = await Hotel.findById(req.body.hotelId);
     if (!hotel) {
       return res.status(404).json({ message: 'Hotel not found' });
@@ -15,13 +14,11 @@ exports.createBooking = async (req, res) => {
       return res.status(400).json({ message: 'No rooms available' });
     }
     
-    // Create booking
     const booking = await Booking.create({ 
       ...req.body, 
       userId: req.user._id 
     });
     
-    // Decrease available rooms
     await Hotel.findByIdAndUpdate(
       req.body.hotelId,
       { $inc: { availableRooms: -1 } }
@@ -39,9 +36,18 @@ exports.getAllBookings = async (req, res) => {
     console.log('Fetching all bookings for admin:', req.user);
     
     const bookings = await Booking.find()
-      .populate('hotelId', 'name location price')
-      .populate('userId', 'name email')
+      .populate({
+        path: 'hotelId',
+        select: 'name location price'
+      })
+      .populate({
+        path: 'userId', 
+        select: 'name email'
+      })
       .sort({ bookingDate: -1 });
+    
+    console.log('Bookings fetched:', bookings.length);
+    console.log('Sample booking:', bookings[0]);
     
     res.json(bookings);
   } catch (error) {
@@ -59,17 +65,21 @@ exports.cancelBooking = async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
     
-    // Update booking status
+    if (booking.status === 'cancelled') {
+      return res.status(400).json({ message: 'Booking is already cancelled' });
+    }
+    
     booking.status = 'cancelled';
     await booking.save();
     
-    // Increase available rooms
+    // Increment available rooms when booking is cancelled
     await Hotel.findByIdAndUpdate(
       booking.hotelId,
       { $inc: { availableRooms: 1 } }
     );
     
-    res.json({ message: 'Booking cancelled successfully' });
+    console.log('Booking cancelled successfully:', booking._id);
+    res.json({ message: 'Booking cancelled successfully', booking });
   } catch (error) {
     console.error('Cancel booking error:', error);
     res.status(500).json({ message: 'Failed to cancel booking', error: error.message });
